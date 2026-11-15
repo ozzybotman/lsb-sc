@@ -624,13 +624,18 @@
       document.getElementById('gate-error').style.display = 'none';
       document.getElementById('gate-submit').textContent = 'Opening...';
       localStorage.setItem('lsb_gate_email', email);
-      try {
-        await fetch('/api/gate', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({email, ts: new Date().toISOString()})
-        });
-      } catch (_) {}
+      // Optional visitor log (Google Apps Script web app URL). Empty = no logging.
+      const GATE_ENDPOINT = '';
+      if (GATE_ENDPOINT) {
+        try {
+          await fetch(GATE_ENDPOINT, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {'Content-Type': 'text/plain'},
+            body: JSON.stringify({email, ts: new Date().toISOString()})
+          });
+        } catch (_) {}
+      }
       unlockGate();
       return false;
     }
